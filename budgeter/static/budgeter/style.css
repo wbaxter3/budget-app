@@ -1,0 +1,43 @@
+body {
+    background: white url("../images/background2.gif");
+}
+
+p {
+  font-family: sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+
+body{
+  font-size: 13px;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+table {
+    border:none;
+    border-collapse: collapse;
+}
+table th{
+  border-bottom:5px solid black;
+}
+table td {
+  text-align:center;;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+}
+
+table td:first-child {
+    border-left: none;
+}
+
+table td:last-child {
+    border-right: none;
+}
+
+
+.btn-link {
+  background-color:yellow;
+}

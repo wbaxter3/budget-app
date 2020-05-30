@@ -1,0 +1,31 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  Hi {{ user.username }}!
+
+  <p><a href="/create_new_budget">Create new budget</a></p>
+
+<table>
+  <th>Budget name</th>
+  <th>Max Amount</th>
+  <th>Current Amount</th>
+{% for key, budget in budgetDict.items %}
+    <tr>
+      <td><p>{{budget.budget_name}}</p></td>
+      <td><p>{{budget.max_amount}}</p></td>
+      <td><p>{{budget.current_amount}}</p></td>
+      <td><form action="/add_to_current_amount/{{budget.budget_id}}">
+        <input type="submit" value="Add to current amount spent"></form></td>
+    </tr>
+{% endfor %}
+</table>
+{% else %}
+  <p>You are not logged in</p>
+  <a href="{% url 'login' %}">login</a>
+  <a href="{% url 'signup' %}">signup</a>
+{% endif %}
+{% endblock %}

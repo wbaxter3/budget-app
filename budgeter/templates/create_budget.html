@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Budget{% endblock %}
+
+{% block content %}
+
+
+<!-- <form action="//" method="post">
+    <label for="budget_name">Budget name: </label>
+    <input id="budget_name" type="text" name="budget_name">
+    <input type="submit" value="OK">
+</form> -->
+
+<form action="/create_new_budget/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}
