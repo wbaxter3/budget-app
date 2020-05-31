@@ -24,7 +24,7 @@ def index(request):
             'max_amount': budget['max_amount'],
             'current_amount':budget['current_amount']
         }
-    print(budgetDict)
+
     return render(request, 'home.html', {'budgetDict':budgetDict})
 
 @login_required

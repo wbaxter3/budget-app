@@ -13,11 +13,13 @@
   <th>Budget name</th>
   <th>Max Amount</th>
   <th>Current Amount</th>
+  <th>Amount Left</th>
 {% for key, budget in budgetDict.items %}
     <tr>
-      <td><p>{{budget.budget_name}}</p></td>
-      <td><p>{{budget.max_amount}}</p></td>
-      <td><p>{{budget.current_amount}}</p></td>
+      <td><p>{{ budget.budget_name }}</p></td>
+      <td><p>${{ budget.max_amount|stringformat:".2f" }}</p></td>
+      <td><p>${{ budget.current_amount|stringformat:".2f" }}</p></td>
+      <td><p>$
       <td><form action="/add_to_current_amount/{{budget.budget_id}}">
         <input type="submit" value="Add to current amount spent"></form></td>
     </tr>
