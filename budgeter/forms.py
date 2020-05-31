@@ -7,5 +7,6 @@ class BudgetForm(forms.Form):
     max_amount = forms.IntegerField(label='max amount', min_value=0)
 
 class AddToAmount(forms.Form):
-    amount_to_add = forms.IntegerField(label='Amount spent since last update', min_value=0)
+    amount_to_add = forms.FloatField(label='Amount spent since last update', min_value=0,
+    widget=forms.NumberInput(attrs={'step':"0.01"}))
     budget_id = forms.IntegerField(widget=forms.HiddenInput())

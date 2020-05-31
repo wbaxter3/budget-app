@@ -39,20 +39,20 @@ def create_new_budget(request):
             budget.max_amount = request.POST.get('max_amount')
             budget.current_amount = 0
             budget.save()
-            return HttpResponseRedirect('/budget_success/')
+            return redirect('home')
 
     else:
         form = BudgetForm()
 
     return render(request, 'create_budget.html', {'form': form})
 
-
+# adds to current amount
 @login_required
 def add_to_current_amount(request, budget_id= None):
 
     if budget_id is None:
         form = AddToAmount(request.POST)
-        print("yes")
+
         if form.is_valid():
             budget = Budget
             budget = Budget.objects.get(pk=request.POST.get('budget_id'))
@@ -67,6 +67,7 @@ def add_to_current_amount(request, budget_id= None):
         form = AddToAmount(data_dict)
     return render(request, 'add_to_current_amount.html', {'form': form})
 
+#
 @login_required
 def budget_success(request):
     # if request.method == 'POST':
