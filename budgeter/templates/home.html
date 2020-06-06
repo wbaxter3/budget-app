@@ -1,6 +1,5 @@
 <!-- templates/home.html -->
 {% extends 'base.html' %}
-{% load greaterthan %}
 {% block title %}Home{% endblock %}
 
 {% block content %}
@@ -13,13 +12,13 @@
   <th>Budget name</th>
   <th>Max Amount</th>
   <th>Current Amount</th>
-  <th>Amount Left</th>
+  <th>Amount Left Over</th>
 {% for key, budget in budgetDict.items %}
     <tr>
       <td><p>{{ budget.budget_name }}</p></td>
       <td><p>${{ budget.max_amount|stringformat:".2f" }}</p></td>
       <td><p>${{ budget.current_amount|stringformat:".2f" }}</p></td>
-      {% if budget.amount_left|gt:0 %}
+      {% if budget.amount_left > 0 %}
       <td style="color:green;">
       {% else %}
       <td style="color:red;">
@@ -31,9 +30,22 @@
           {% csrf_token %}
           <input type="hidden" name="budget_id" value="{{budget.budget_id}}">
           <input type="submit" value="Delete budget" onclick="confirm('Are you sure you want to delete budget {{budget.budget_name}}?');"></form></td>
+          <td><form action="/edit_budget/{{budget.budget_id}}">
+            <input type="submit" value="Edit budget"></form></td>
     </tr>
 {% endfor %}
+
 </table>
+<hr>
+<br>
+<br>
+
+<!-- <table>
+  <th>Total income</th>
+  <th>Total expenses</th>
+  <tr>
+    <td> -->
+
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">login</a>

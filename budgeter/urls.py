@@ -29,7 +29,10 @@ urlpatterns = [
     path('budget_success/', views.budget_success, name='budget_success'),
     path('add_to_current_amount/', views.add_to_current_amount, name='add_to_current_amount'),
     path('add_to_current_amount/<int:budget_id>/', views.add_to_current_amount, name='add_to_current_amount'),
-    path('delete_budget/', views.delete_budget, name='delete_budget')
+    path('delete_budget/', views.delete_budget, name='delete_budget'),
+    path('edit_budget/<int:budget_id>/', views.edit_budget, name='edit_budget'),
+    path('edit_budget/', views.edit_budget, name='edit_budget')
+
 ]
 
 

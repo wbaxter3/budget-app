@@ -78,6 +78,33 @@ def add_to_current_amount(request, budget_id= None):
         form = AddToAmount(data_dict)
     return render(request, 'add_to_current_amount.html', {'form': form})
 
+
+@login_required
+def edit_budget(request, budget_id=None):
+
+    if budget_id:
+        budget = Budget.objects.get(pk=budget_id)
+        data_dict = {
+            'budget_id': budget_id,
+            'budget_name': budget.budget_name,
+            'max_amount': budget.max_amount,
+            'current_amount': budget.current_amount
+        }
+        form = EditBudget(initial=data_dict)
+        return render(request, 'edit_budget.html', {'form':form})
+
+    else:
+        form = EditBudget(request.POST)
+        if form.is_valid():
+            budget = Budget.objects.get(pk=request.POST.get('budget_id'))
+            budget.budget_name = request.POST.get('budget_name')
+            budget.max_amount = request.POST.get('max_amount')
+            budget.current_amount = request.POST.get('current_amount')
+            budget.save()
+            return redirect('home')
+
+
+
 #
 @login_required
 def budget_success(request):
