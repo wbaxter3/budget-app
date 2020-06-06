@@ -22,7 +22,8 @@ def index(request):
             'budget_id': budget['id'],
             'budget_name': budget['budget_name'],
             'max_amount': budget['max_amount'],
-            'current_amount':budget['current_amount']
+            'current_amount':budget['current_amount'],
+            'amount_left':budget['max_amount']-budget['current_amount']
         }
 
     return render(request, 'home.html', {'budgetDict':budgetDict})
@@ -46,6 +47,17 @@ def create_new_budget(request):
 
     return render(request, 'create_budget.html', {'form': form})
 
+
+@login_required
+def delete_budget(request):
+    #if POST request process form data
+    budget_id = int(request.POST.get('budget_id'))
+    budget = Budget.objects.get(pk=budget_id)
+    budget.delete()
+
+
+    return redirect('home')
+
 # adds to current amount
 @login_required
 def add_to_current_amount(request, budget_id= None):
@@ -54,9 +66,8 @@ def add_to_current_amount(request, budget_id= None):
         form = AddToAmount(request.POST)
 
         if form.is_valid():
-            budget = Budget
             budget = Budget.objects.get(pk=request.POST.get('budget_id'))
-            budget.current_amount += int(request.POST.get('amount_to_add'))
+            budget.current_amount += float(request.POST.get('amount_to_add'))
             budget.save()
             return redirect('home')
 
