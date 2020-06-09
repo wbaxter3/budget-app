@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
-from .models import Budget
+from .models import *
 #from django.template import Context, Template
 from django.contrib.auth.decorators import login_required
 from .forms import *
@@ -12,21 +12,35 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    all_budgets = Budget.objects.all()
-    all_budgets_values = all_budgets.values()
+    if request.user.is_authenticated:
+        all_budgets = Budget.objects.filter(user=request.user)
+        all_budgets_values = all_budgets.values()
 
-    budgetDict = {}
+        budgetDict = {}
+        monthly_expenses = 0
+        for budget in all_budgets_values:
+            budgetDict[budget['id']] = {
+                'budget_id': budget['id'],
+                'budget_name': budget['budget_name'],
+                'max_amount': budget['max_amount'],
+                'current_amount':budget['current_amount'],
+                'amount_left':budget['max_amount']-budget['current_amount']
 
-    for budget in all_budgets_values:
-        budgetDict[budget['id']] = {
-            'budget_id': budget['id'],
-            'budget_name': budget['budget_name'],
-            'max_amount': budget['max_amount'],
-            'current_amount':budget['current_amount'],
-            'amount_left':budget['max_amount']-budget['current_amount']
-        }
+            }
+            monthly_expenses += float(budget['max_amount']-budget['current_amount'])
+        user_monthly_income = UserMonthlyIncome.objects.filter(user=request.user)
+        user_values = user_monthly_income.values()
+        user_dict = {}
+        if user_values.count() != 0:
 
-    return render(request, 'home.html', {'budgetDict':budgetDict})
+            user_dict['monthly_income'] = user_values[0]['monthly_income']
+            user_dict['monthly_expenses'] = monthly_expenses
+            user_dict['left_over'] = user_values[0]['monthly_income'] - monthly_expenses
+
+    else:
+        budgetDict = user_dict = {}
+
+    return render(request, 'home.html', {'budgetDict':budgetDict, "user_dict":user_dict})
 
 @login_required
 def create_new_budget(request):
@@ -39,6 +53,7 @@ def create_new_budget(request):
             budget.budget_name = request.POST.get('budget_name')
             budget.max_amount = request.POST.get('max_amount')
             budget.current_amount = 0
+            budget.user = request.user
             budget.save()
             return redirect('home')
 
@@ -104,14 +119,49 @@ def edit_budget(request, budget_id=None):
             return redirect('home')
 
 
-
-#
 @login_required
-def budget_success(request):
-    # if request.method == 'POST':
-    #     form = BudgetForm(reuqest.post)
-    #     info = {
-    #         'budget_name': form.cleaned_data['budget_name'],
-    #         'max_amount': form.cleaned_data['max_amount']
-    #     }
-    return render(request, 'budget_success.html')
+def edit_monthly_income(request):
+
+    if request.method=='GET':
+        user_monthly_income = UserMonthlyIncome.objects.get(user=request.user)
+        data_dict = {
+            'monthly_income': user_monthly_income.monthly_income
+        }
+        form = EditMonthlyIncome(initial=data_dict)
+        return render(request, 'edit_monthly_income.html', {'form':form})
+
+    else:
+        form = EditMonthlyIncome(request.POST)
+        if form.is_valid():
+            user_monthly_income = UserMonthlyIncome.objects.get(user=request.user)
+            user_monthly_income.monthly = request.POST.get('monthly_income')
+            user_monthly_income.save()
+            return redirect('home')
+
+@login_required
+def create_new_monthly_income(request):
+
+    if request.method=='GET':
+
+        form = EditMonthlyIncome()
+        return render(request, 'create_new_monthly_income.html', {'form':form})
+
+    else:
+
+        form = EditMonthlyIncome(request.POST)
+        if form.is_valid():
+            user_monthly_income = UserMonthlyIncome()
+            user_monthly_income.user = request.user
+            user_monthly_income.monthly_income = request.POST.get('monthly_income')
+            user_monthly_income.save()
+            return redirect('home')
+
+@login_required
+def reset_budget(request):
+    all_budgets = Budget.objects.filter(user=request.user)
+    all_budgets_values = all_budgets.values()
+    for budget in all_budgets_values:
+        budget = Budget.objects.get(pk=budget['id'])
+        budget.current_amount = 0
+        budget.save()
+    return redirect('home')

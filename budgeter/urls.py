@@ -26,14 +26,14 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', views.index, name='home'),
     path('create_new_budget/', views.create_new_budget, name='create_budgets'),
-    path('budget_success/', views.budget_success, name='budget_success'),
     path('add_to_current_amount/', views.add_to_current_amount, name='add_to_current_amount'),
     path('add_to_current_amount/<int:budget_id>/', views.add_to_current_amount, name='add_to_current_amount'),
     path('delete_budget/', views.delete_budget, name='delete_budget'),
     path('edit_budget/<int:budget_id>/', views.edit_budget, name='edit_budget'),
-    path('edit_budget/', views.edit_budget, name='edit_budget')
+    path('edit_budget/', views.edit_budget, name='edit_budget'),
+    path('edit_monthly_income/', views.edit_monthly_income, name='edit_monthly_income'),
+    path('create_new_monthly_income/', views.create_new_monthly_income, name='create_new_monthly_income'),
+    path('reset_budget/', views.reset_budget, name='reset_budget')
+
 
 ]
-
-
-# in the middle of updating the add to current amount form
