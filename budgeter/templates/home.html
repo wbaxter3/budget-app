@@ -27,5 +27,79 @@
   <p>You are not logged in</p>
   <a href="{% url 'login' %}">login</a>
   <a href="{% url 'signup' %}">signup</a>
+{% else %}
+
+  Hi {{ user.username }}!
+
+  <p><a href="/create_new_budget">Create new budget</a></p><form action="/reset_budget/" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Reset budget expenditure to zero for month of {% now 'F' %}" onclick="return confirm('Are you sure you want to reset all budget expenditure?');"></form>
+
+
+      {% if budgetDict.items|length > 0 %}
+      <br>
+      <br>
+      <h2><u>Budget for {% now "F" %}</u></h2>
+      <table>
+        <th>Category name</th>
+        <th>Max Amount</th>
+        <th>Current Amount Spent</th>
+        <th>Amount Left Over</th>
+      {% for key, budget in budgetDict.items %}
+          <tr>
+            <td><p>{{ budget.budget_name }}</p></td>
+            <td><p>${{ budget.max_amount|stringformat:".2f" }}</p></td>
+            <td><p>${{ budget.current_amount|stringformat:".2f" }}</p></td>
+            {% if budget.amount_left > 0 %}
+            <td style="color:green;">
+            {% else %}
+            <td style="color:red;">
+            {% endif %}
+            <p>${{budget.amount_left|stringformat:".2f" }}</p></td>
+            <td><form action="/add_to_current_amount/{{budget.budget_id}}">
+              <input type="submit" value="Add to current amount spent"></form></td>
+              <td><form action="/delete_budget/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="budget_id" value="{{budget.budget_id}}">
+                <input type="submit" value="Delete category" onclick="return confirm('Are you sure you want to delete budget {{budget.budget_name}}?');"></form></td>
+                <td><form action="/edit_budget/{{budget.budget_id}}">
+                  <input type="submit" value="Edit category"></form></td>
+          </tr>
+      {% endfor %}
+
+
+      </table>
+
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      {% endif %}
+
+      {%if user_dict.items|length > 0 %}
+      <h2><u>Monthly income/expenses<u></h2>
+      <table>
+        <th>Total monthly income</th>
+        <th>Total monthly expenses</th>
+        <th>Amount left over</th>
+        <tr>
+          <td>${{user_dict.monthly_income|stringformat:".2f"}}</td>
+          <td>${{user_dict.monthly_expenses|stringformat:".2f"}}</td>
+          {% if user_dict.left_over > 0 %}
+          <td style="color:green;">
+          {% else %}
+          <td style="color:red;">
+          {% endif %}
+          ${{user_dict.left_over|stringformat:".2f"}}</td>
+          <td><form action="/edit_monthly_income/">
+            <input type="submit" value="Edit Monthly Income"></form></td>
+          </tr>
+      </table>
+      {% else %}
+      <p><a href="/create_new_monthly_income">Set monthly income</a></p>
+
+      {% endif %}
 {% endif %}
 {% endblock %}
